@@ -9,7 +9,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/profile/${code}`);
+        const response = await axios.get(`https://eight699-4.onrender.com/profile/${code}`);
         setProfile(response.data);
       } catch (error) {
         console.error('Error fetching profile:', error);
