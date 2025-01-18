@@ -17,7 +17,7 @@ const OtpRequest = () => {
       // Log the request payload
       console.log('Sending request with email:', email);
 
-      const response = await axios.post('http://localhost:5000/check-email', 
+      const response = await axios.post('https://eight699-4.onrender.com/check-email', 
         { email },
         {
           headers: {

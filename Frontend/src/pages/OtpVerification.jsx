@@ -11,7 +11,7 @@ const OtpVerification = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/verify-otp', { otp: enteredOtp, email });
+      const response = await axios.post('https://eight699-4.onrender.com/verify-otp', { otp: enteredOtp, email });
       if (response.data.login) {
         // If OTP is correct, navigate to CreateAccount page
         navigate('/createAccount', { state: { email, otp } });
