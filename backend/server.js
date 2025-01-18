@@ -56,67 +56,26 @@ const sendOtpEmail = (email, otp) => {
 
 // Route: Checking Email and Sending OTP
 app.post('/check-email', async (req, res) => {
-    console.log('Received request body:', req.body); // Debug log
-  
-    const { email } = req.body;
-    
-    // Validate email
-    if (!email) {
-      console.log('Email missing from request');
-      return res.status(400).json({ error: 'Email is required.' });
-    }
-  
-    // Basic email format validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      console.log('Invalid email format:', email);
-      return res.status(400).json({ error: 'Invalid email format.' });
-    }
-  
-    try {
-      // Check if user exists
-      const snapshot = await db.ref('users')
-        .orderByChild('email')
-        .equalTo(email)
-        .once('value');
-      
-      const userExists = snapshot.exists();
-      console.log('User exists:', userExists); // Debug log
-  
-      // Generate OTP
-      const otp = Math.floor(1000 + Math.random() * 9000).toString();
-      console.log('Generated OTP:', otp); // Debug log
-  
-      // Store OTP temporarily (you might want to add expiration)
-      await db.ref('temp_otps').child(email.replace('.', '_')).set({
-        otp,
-        timestamp: Date.now()
-      });
-  
-      // Send OTP email
-      try {
-        await sendOtpEmail(email, otp);
-        console.log('OTP email sent successfully');
-      } catch (emailError) {
-        console.error('Error sending OTP email:', emailError);
-        // Continue even if email fails, for testing purposes
-      }
-  
-      res.json({ 
-        exists: userExists, 
-        otp,
-        message: 'OTP sent successfully'
-      });
-  
-    } catch (error) {
-      console.error('Error in /check-email:', error);
-      res.status(500).json({ 
-        error: 'Internal server error.',
-        details: error.message 
-      });
-    }
-  });
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email is required.' });
 
+  try {
+    const userSnapshot = await db.ref('users').orderByChild('email').equalTo(email).once('value');
+    const userExists = userSnapshot.exists();
+
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    await db.ref('temp_otps').child(email.replace('.', '_')).set({ otp, timestamp: Date.now() });
+
+    // Respond immediately
+    res.json({ exists: userExists, message: 'OTP sent successfully' });
+
+    // Send email asynchronously
+    sendOtpEmail(email, otp).catch(console.error);
+  } catch (error) {
+    console.error('Error in /check-email:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
 // Route: Verifying OTP
 app.post('/verify-otp', async (req, res) => {
   const { otp, email } = req.body;
