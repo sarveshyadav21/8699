@@ -10,7 +10,7 @@ const nodemailer = require('nodemailer');
 const serviceAccount = require('./serviceAccountKey.json'); // Ensure this file exists
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://back-a887f-default-rtdb.asia-southeast1.firebasedatabase.app/',
+  databaseURL: 'https://project-6617325155113103718-default-rtdb.firebaseio.com/',
   storageBucket: 'your-firebase-storage-bucket-name.appspot.com', // Make sure this is correct
 });
 const db = admin.database();
